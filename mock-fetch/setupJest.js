@@ -1,0 +1,1 @@
+const fetchMock = require('jest-fetch-mock').enableMocks();
