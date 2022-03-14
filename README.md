@@ -1,4 +1,4 @@
-# Mock-fetch-with-jest
+# Mock fetch with jest
 This repo holds examples of jest implementations for fetch mocking. Feel free to use it however you want.
 
 To install depenencies run this:
