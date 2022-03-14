@@ -1,6 +1,11 @@
 # Mock-fetch-with-jest
 This repo holds examples of jest implementations for fetch mocking. Feel free to use it however you want.
 
+To install depenencies run this:
+```bash
+npm i --prefix mock-fetch-react && npm i --prefix mock-fetch-with-library
+```
+
 ## Mock fetch in react-app
 Fetch is a browser API, which means it works only in browsers. That's why if you will try to run fetch through terminal it will fail.
 
