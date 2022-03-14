@@ -1,21 +1,21 @@
-# Jest study cases
-This repo holds examples of jest implementations. Feel free to do whatever you want with this.
+# Mock-fetch-with-jest
+This repo holds examples of jest implementations for fetch mocking. Feel free to use it however you want.
 
 ## Mock fetch in react-app
-Fetch is a browser API, which means it works only in browsers. That's why if you will try to run fetch with terminal it will fail.
+Fetch is a browser API, which means it works only in browsers. That's why if you will try to run fetch through terminal it will fail.
 
 That being said, react-app by default use [whatwg-fetch module](https://github.com/github/fetch), which enables fetch-use within the react-app folder.
 
-To summarize, you can't normally use and test fetch outside browser, but in react-app folder you can. So if you don't want to install addinitonal libraries apart of jest for fetch testing, you can do it for react-app.
+To summarize, you can't normally use and test fetch outside of browser, but in react-app folder you can (if you use react-app testing commands). So if you don't want to install addinitonal libraries apart of jest for fetch testing, you can do it for react-app.
 
-Quentin Ménoret describes good in [Mocks and Spies with Jest](https://dev.to/qmenoret/mocks-and-spies-with-jest-32gf) the
-
-To ways to impement that:
-- Spy on fetch
-- Replace global.fetch
+I have found two ways to impement that:
+- [Spy on fetch](#spy-on-fetch)
+- [Replace global.fetch](#replace-globalfetch)
 
 ### Spy on fetch
-Jest library has `.onSpy` method that watches specified method and can change it's output for mocking. 
+[→ spy-on-fetch folder](./mock-fetch-react/src/spy-on-fetch/)
+
+Jest library has `.onSpy` method that watches specified method and can change its output for mocking. 
 
 ```javascript
 const spy = jest
@@ -24,9 +24,9 @@ const spy = jest
         Promise.resolve({id: 2}) 
     })) // Mock fetch-result: response with json
 ```
-There's a lot of nested promises which can be hard to wrap your head around first time you look at them. Which may become a reason why you would consider to use special libraries.
+There's a lot of nested promises which can be hard to wrap your head around first time you look at them, but they are the way to simulate fetch response.
 
-The complete code might look like this
+The complete code might look like this:
 
 ```javascript
 // getTodo.test.js
@@ -54,15 +54,19 @@ test("Basic test", async () => {
 ```
 ### Replace global.fetch
 
-You can fully replace fetch-method. That is not recomended to do, but for testing purposes we can allow it. But we should not forget to reset fetch after the tests.
+[→ replace-global-fetch folder](/mock-fetch-react/src/replace-global-fetch/)
+
+You can fully replace fetch with a fake function. Fetch is stored in global variable, and normally it is not recommended to mess with it. But for testing purposes we are allowed to break some rules... as long as we promise to reset fetch after the tests.
+
 ``` javascript
 const realFetch = global.fetch; // Save real fetch
 global.fetch = () => {} // Replace with fake fetch
 //... bunch of code
-global.fetch = realFetch;
+global.fetch = realFetch; // Reset fetch
 ``` 
 
-Implement jest mocking fucntions, beforeEach() and afterEach() methods and you will get this:
+Implement jest mocking functions, `beforeEach()` and `afterEach()` methods and you will get this:
+
 ```javascript
 const realFetch = global.fetch; // Save real fetch
 
@@ -77,8 +81,10 @@ afterAll(() => {
 })
 
 ```
-Completed code is going to look like this:
+The complete code might look like this:
+
 ```javascript
+// getAlbum.test.js
 const getAlbum = require("./getAlbum");
 
 const realFetch = global.fetch;
@@ -102,9 +108,10 @@ test("Some test", async () => {
 ```
 
 ## Mock fetch with libraries
-If tests are not in react-app-environment, then fetch will not going to work, since it's a browser API, thus works only in a browser.
 
-To enable fetch and give us easy-to-configure mocking options we can use special libraries such as [jest-fetch-mock](https://github.com/jefflau/jest-fetch-mock).
+[→ mock-fetch-with-library folder](/mock-fetch-with-library/utils/)
+
+If tests are not in react-app-environment, then fetch will not going to work by default. To enable fetch and give us easy-to-configure mocking options we can use special libraries such as [jest-fetch-mock](https://github.com/jefflau/jest-fetch-mock).
 
 After module has been installed, create and configure `setupJest.js`.
 
@@ -123,19 +130,13 @@ Add to `package.json`:
   ]
 }
 ```
-Then in `...test.js` you can access fetch and it's new methods for mocking.
+Then in `.test.js` file you can access fetch and it's new methods for mocking.
 ```javascript
 // getPost.test.js
 const getPost = require("./getPost");
 
 // Mocking fetch
-fetch
-    .mockResponseOnce(JSON.stringify({
-        "userId": 1,
-        "id": 4,
-        "title": "eum et est occaecati",
-        "body": "ullam et saepe reiciendis voluptatem adipisci\nsit amet autem assumenda provident rerum culpa\nquis hic commodi nesciunt rem tenetur doloremque ipsam iure\nquis sunt voluptatem rerum illo velit"
-    }))
+fetch.mockResponseOnce(JSON.stringify({ id: 4 }))
 
 test("Some test", async () => {
     const post = await getPost(4);
@@ -143,3 +144,8 @@ test("Some test", async () => {
 })
 ```
 Visit [documentation of jest-fetch-mock]() for more details and configuration options.
+
+## Sources
+- [Mocks and Spies with Jest | dev.to](https://dev.to/qmenoret/mocks-and-spies-with-jest-32gf) by Quentin Ménoret
+- [Mocking Fetch Using jest-fetch-mock | youtube](https://youtu.be/yhUep7E9O20) by Leigh Halliday
+- [How to Mock Fetch in Jest Manually | youtube](https://youtu.be/mHXhuPHiDj8) by Leigh Halliday
